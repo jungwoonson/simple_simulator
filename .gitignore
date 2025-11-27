@@ -1,0 +1,63 @@
+# ROS2
+install/
+build/
+log/
+*.pyc
+__pycache__/
+*.egg-info/
+.colcon_cache/
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+out/
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+dist/
+eggs/
+.eggs/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Gazebo
+*.log
+*~
+.gazebo/
+models/
+
+# Ubuntu
+*~
+.directory
+.Trash-*
+
+# ROS
+devel/
+*.bag
+CATKIN_IGNORE
+
+# Build artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# IDE
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
