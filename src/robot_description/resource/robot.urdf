@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<robot name="simple_robot">
+
+    <!-- Base Link: 로봇의 본체 (중심 링크)
+         모든 다른 링크들이 연결되는 기준점 -->
+    <link name="base_link">
+        <!-- Visual: Gazebo에서 보이는 시각적 표현 -->
+        <visual>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>  <!-- xyz: 위치(m), rpy: 회전(rad), z=0.05로 바퀴 위에 배치 -->
+            <geometry>
+                <box size="0.6 0.4 0.2"/>  <!-- 직육면체: 길이 0.6m, 너비 0.4m, 높이 0.2m (센서 추가 공간 고려) -->
+            </geometry>
+            <material name="blue">
+                <color rgba="0 0 0.8 1"/>  <!-- RGBA: Red, Green, Blue, Alpha (0~1) -->
+            </material>
+        </visual>
+        <!-- Collision: 물리 엔진이 충돌을 계산할 때 사용하는 형상 (보통 visual과 동일) -->
+        <collision>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.6 0.4 0.2"/>
+            </geometry>
+        </collision>
+        <!-- Inertial: 물리 시뮬레이션에 필요한 질량과 관성 정보 -->
+        <inertial>
+            <origin xyz="0 0 0.05" rpy="0 0 0"/>
+            <mass value="10"/>  <!-- 질량 10kg -->
+            <inertia ixx="0.2" ixy="0" ixz="0" iyy="0.3" iyz="0" izz="0.4"/>  <!-- 관성 모멘트 텐서 -->
+        </inertial>
+    </link>
+
+    <!-- Left Wheel: 왼쪽 구동 바퀴 (모터로 제어됨) -->
+    <link name="left_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="0.1" length="0.08"/>  <!-- 원통: 반지름 0.1m(지름 20cm), 두께 0.08m -->
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>  <!-- 검은색 -->
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.1" length="0.08"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1"/>  <!-- 바퀴 질량 1kg -->
+            <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.01"/>  <!-- 원통의 관성 모멘트 -->
+        </inertial>
+    </link>
+
+    <!-- Joint: 본체와 바퀴를 연결하는 관절 -->
+    <joint name="left_wheel_joint" type="continuous">  <!-- continuous: 360도 무한 회전 가능 -->
+        <parent link="base_link"/>  <!-- 부모 링크: 본체 -->
+        <child link="left_wheel"/>  <!-- 자식 링크: 바퀴 -->
+        <origin xyz="-0.15 0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 -0.15m, 왼쪽 0.24m, 회전: 90도(바퀴를 세움) -->
+        <axis xyz="0 0 1"/>  <!-- 회전축: z축 방향 (원통이 90도 회전했으므로 실제론 바퀴 굴러가는 방향) -->
+    </joint>
+
+    <!-- Right Wheel: 오른쪽 구동 바퀴 (모터로 제어됨) -->
+    <link name="right_wheel">
+        <visual>
+            <geometry>
+                <cylinder radius="0.1" length="0.08"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0 0 0 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder radius="0.1" length="0.08"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1"/>
+            <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.01"/>
+        </inertial>
+    </link>
+
+    <joint name="right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel"/>
+        <origin xyz="-0.15 -0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 -0.15m, 오른쪽 -0.24m (y축 음수 방향) -->
+        <axis xyz="0 0 1"/>
+    </joint>
+
+    <!-- Rear Caster: 뒤쪽 캐스터 볼 (자유롭게 구르는 보조 바퀴) -->
+    <link name="rear_caster">
+        <visual>
+            <geometry>
+                <sphere radius="0.05"/>  <!-- 구: 반지름 0.05m -->
+            </geometry>
+            <material name="gray">
+                <color rgba="0.5 0.5 0.5 1"/>  <!-- 회색 -->
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <sphere radius="0.05"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.5"/>  <!-- 캐스터 질량 0.5kg -->
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>  <!-- 구의 관성 모멘트 -->
+        </inertial>
+    </link>
+
+    <joint name="rear_caster_joint" type="fixed">  <!-- fixed: 고정 조인트 (회전하지 않음) -->
+        <parent link="base_link"/>
+        <child link="rear_caster"/>
+        <origin xyz="0.2 0 -0.05" rpy="0 0 0"/>  <!-- 위치: 뒤쪽 0.2m, 중앙, 아래 -0.05m -->
+    </joint>
+
+    <!-- Gazebo에서 캐스터 볼이 자유롭게 미끄러지도록 마찰 설정 -->
+    <gazebo reference="rear_caster">
+        <mu1>0.0</mu1>  <!-- 마찰 계수 0 (완전히 미끄러움) -->
+        <mu2>0.0</mu2>
+    </gazebo>
+
+    <!-- Gazebo Differential Drive Plugin
+         두 개의 바퀴를 독립적으로 제어하여 전진/후진/회전 구현
+         양쪽 바퀴 속도가 같으면 직진, 다르면 회전 -->
+    <gazebo>
+        <plugin name="gz::sim::systems::DiffDrive" filename="libgz-sim-diff-drive-system.so">
+            <left_joint>left_wheel_joint</left_joint>  <!-- 왼쪽 구동 바퀴 지정 -->
+            <right_joint>right_wheel_joint</right_joint>  <!-- 오른쪽 구동 바퀴 지정 -->
+            <wheel_separation>0.48</wheel_separation>  <!-- 좌우 바퀴 중심 간 거리 0.48m (0.24*2) -->
+            <wheel_radius>0.1</wheel_radius>  <!-- 바퀴 반지름 0.1m (속도 계산에 사용) -->
+            <topic>/cmd_vel</topic>  <!-- ROS2 토픽: geometry_msgs/Twist 타입, linear.x(전후진 m/s), angular.z(회전 rad/s) -->
+        </plugin>
+    </gazebo>
+
+</robot>
