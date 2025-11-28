@@ -1,0 +1,29 @@
+slam_toolbox:
+  ros__parameters:
+    # 최적화 알고리즘 설정 (Ceres Solver 사용)
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+
+    # 프레임 및 토픽 설정
+    map_frame: map  # 지도 프레임 이름
+    odom_frame: odom  # Odometry 프레임 이름
+    base_frame: base_link  # 로봇 본체 프레임 이름
+    scan_topic: /scan  # LiDAR 스캔 데이터를 받을 토픽
+    mode: mapping  # 매핑 모드 (지도 생성)
+
+    # SLAM 업데이트 설정
+    map_update_interval: 1.0  # 지도 업데이트 주기 (초)
+    max_laser_range: 10.0  # 최대 레이저 범위 (m)
+    minimum_travel_distance: 0.3  # 최소 이동 거리 (m) - 이만큼 이동해야 업데이트
+    minimum_travel_heading: 0.3  # 최소 회전 각도 (rad) - 이만큼 회전해야 업데이트
+    resolution: 0.05  # 지도 해상도 (m) - 한 픽셀이 5cm
+
+    # TF(Transform) 관련 설정
+    transform_publish_period: 0.05  # TF 발행 주기 (초)
+    tf_buffer_duration: 30.0  # TF 버퍼 유지 시간 (초)
+
+    # Lifecycle 관리자 사용 (자동 시작)
+    use_lifecycle_manager: true

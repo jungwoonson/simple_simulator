@@ -18,6 +18,8 @@ setup(
         ('share/' + package_name + '/launch', glob('launch/*.py')),
         # resource 디렉터리의 모든 .urdf 파일을 설치 디렉터리로 복사
         ('share/' + package_name + '/resource', glob('resource/*.urdf')),
+        # config 디렉터리의 모든 .yaml 파일을 설치 디렉터리로 복사
+        ('share/' + package_name + '/config', glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -32,7 +34,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            # 실행 가능한 스크립트가 있다면 여기에 추가
+            'scan_frame_changer = robot_description.scan_frame_changer:main',
         ],
     },
 )

@@ -54,8 +54,8 @@
     <joint name="left_wheel_joint" type="continuous">  <!-- continuous: 360도 무한 회전 가능 -->
         <parent link="base_link"/>  <!-- 부모 링크: 본체 -->
         <child link="left_wheel"/>  <!-- 자식 링크: 바퀴 -->
-        <origin xyz="-0.15 0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 -0.15m, 왼쪽 0.24m, 회전: 90도(바퀴를 세움) -->
-        <axis xyz="0 0 1"/>  <!-- 회전축: z축 방향 (원통이 90도 회전했으므로 실제론 바퀴 굴러가는 방향) -->
+        <origin xyz="0.15 0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 0.15m, 왼쪽 0.24m, 회전: 90도(바퀴를 세움) -->
+        <axis xyz="0 0 -1"/>  <!-- 회전축: -z축 방향 (바퀴 회전 방향 반전) -->
     </joint>
 
     <!-- Right Wheel: 오른쪽 구동 바퀴 (모터로 제어됨) -->
@@ -82,8 +82,8 @@
     <joint name="right_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="right_wheel"/>
-        <origin xyz="-0.15 -0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 -0.15m, 오른쪽 -0.24m (y축 음수 방향) -->
-        <axis xyz="0 0 1"/>
+        <origin xyz="0.15 -0.24 0" rpy="1.5708 0 0"/>  <!-- 위치: 앞쪽 0.15m, 오른쪽 -0.24m (y축 음수 방향) -->
+        <axis xyz="0 0 -1"/>  <!-- 회전축: -z축 방향 (바퀴 회전 방향 반전) -->
     </joint>
 
     <!-- Rear Caster: 뒤쪽 캐스터 볼 (자유롭게 구르는 보조 바퀴) -->
@@ -110,7 +110,7 @@
     <joint name="rear_caster_joint" type="fixed">  <!-- fixed: 고정 조인트 (회전하지 않음) -->
         <parent link="base_link"/>
         <child link="rear_caster"/>
-        <origin xyz="0.2 0 -0.05" rpy="0 0 0"/>  <!-- 위치: 뒤쪽 0.2m, 중앙, 아래 -0.05m -->
+        <origin xyz="-0.2 0 -0.05" rpy="0 0 0"/>  <!-- 위치: 뒤쪽 -0.2m, 중앙, 아래 -0.05m -->
     </joint>
 
     <!-- Gazebo에서 캐스터 볼이 자유롭게 미끄러지도록 마찰 설정 -->
@@ -123,12 +123,84 @@
          두 개의 바퀴를 독립적으로 제어하여 전진/후진/회전 구현
          양쪽 바퀴 속도가 같으면 직진, 다르면 회전 -->
     <gazebo>
-        <plugin name="gz::sim::systems::DiffDrive" filename="libgz-sim-diff-drive-system.so">
-            <left_joint>left_wheel_joint</left_joint>  <!-- 왼쪽 구동 바퀴 지정 -->
-            <right_joint>right_wheel_joint</right_joint>  <!-- 오른쪽 구동 바퀴 지정 -->
-            <wheel_separation>0.48</wheel_separation>  <!-- 좌우 바퀴 중심 간 거리 0.48m (0.24*2) -->
-            <wheel_radius>0.1</wheel_radius>  <!-- 바퀴 반지름 0.1m (속도 계산에 사용) -->
-            <topic>/cmd_vel</topic>  <!-- ROS2 토픽: geometry_msgs/Twist 타입, linear.x(전후진 m/s), angular.z(회전 rad/s) -->
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
+            <wheel_separation>0.48</wheel_separation>
+            <wheel_radius>0.1</wheel_radius>
+            <odom_publish_frequency>50</odom_publish_frequency>
+            <topic>cmd_vel</topic>
+            <tf_topic>/tf</tf_topic>
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
+        </plugin>
+    </gazebo>
+
+    <!-- Gazebo Sensors System Plugin: 센서 시스템 활성화 -->
+    <gazebo>
+        <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+            <render_engine>ogre2</render_engine>  <!-- 렌더링 엔진 지정 -->
+        </plugin>
+    </gazebo>
+
+    <!-- LiDAR Sensor Link: 센서의 물리적 형태 정의 -->
+    <link name="lidar_link">
+        <!-- Visual: 센서의 시각적 모양 (빨간 원통) -->
+        <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.07"/>
+            </geometry>
+            <material name="red">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        <!-- Collision: 충돌 감지용 형상 -->
+        <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.07"/>
+            </geometry>
+        </collision>
+        <!-- Inertial: 질량 및 관성 정보 -->
+        <inertial>
+            <mass value="0.3"/>
+            <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+        </inertial>
+    </link>
+
+    <!-- LiDAR Joint: 센서를 본체에 고정 연결 -->
+    <joint name="lidar_joint" type="fixed">
+        <parent link="base_link"/>  <!-- 부모: 로봇 본체 -->
+        <child link="lidar_link"/>   <!-- 자식: LiDAR 센서 -->
+        <origin xyz="0.2 0 0.2" rpy="0 0 0"/>  <!-- 위치: 앞쪽 0.2m, 위쪽 0.2m -->
+    </joint>
+
+    <!-- Gazebo LiDAR Plugin: 실제 센서 기능 구현 -->
+    <gazebo reference="lidar_link">  <!-- lidar_link에 센서 플러그인 적용 -->
+        <sensor name="gpu_lidar" type="gpu_lidar">  <!-- 센서 이름 및 타입 정의 -->
+            <topic>scan</topic>  <!-- 센서 데이터를 발행할 Gazebo 토픽 이름 -->
+            <update_rate>10</update_rate>  <!-- 센서 업데이트 빈도 (Hz) -->
+            <lidar>  <!-- LiDAR 센서 설정 -->
+                <scan>  <!-- 스캔 패턴 설정 -->
+                    <horizontal>  <!-- 수평 스캔 설정 -->
+                        <samples>360</samples>  <!-- 한 회전당 측정점 개수 -->
+                        <resolution>1</resolution>  <!-- 각 측정점 간 해상도 -->
+                        <min_angle>-3.14159</min_angle>  <!-- 스캔 시작 각도 (라디안) -->
+                        <max_angle>3.14159</max_angle>   <!-- 스캔 종료 각도 (라디안 -->
+                    </horizontal>
+                </scan>
+                <range>  <!-- 거리 측정 범위 -->
+                    <min>0.12</min>  <!-- 최소 감지 거리 (미터) -->
+                    <max>10.0</max>  <!-- 최대 감지 거리 (미터) -->
+                </range>
+            </lidar>
+            <visualize>true</visualize>  <!-- Gazebo에서 시각적 표시 여부 -->
+        </sensor>
+    </gazebo>
+
+    <gazebo>
+        <plugin filename="gz-sim-joint-state-publisher-system"
+                name="gz::sim::systems::JointStatePublisher">
+            <topic>/world/empty/joint_state</topic>
         </plugin>
     </gazebo>
 
