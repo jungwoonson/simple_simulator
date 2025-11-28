@@ -4,7 +4,7 @@
   <name>robot_description</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="jungwoon571@gmail.com">jungwoon571</maintainer>
+  <maintainer email="your_email@example.com">your_email</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>

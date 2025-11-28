@@ -13,14 +13,20 @@ def generate_launch_description():
 
     return LaunchDescription([
         ExecuteProcess(
-            cmd=['gz', 'sim', '-r', 'empty.sdf'],
+            cmd=['gz', 'sim', '-r', os.path.join(pkg_path, 'worlds', 'factory_warehouse.sdf')],
             output='screen'
         ),
 
         Node(
             package='ros_gz_sim',
             executable='create',
-            arguments=['-name', 'simple_robot', '-topic', '/robot_description'],
+            arguments=[
+                '-name', 'simple_robot',
+                '-topic', '/robot_description',
+                '-x', '3.0',
+                '-y', '3.0',
+                '-z', '0.1'
+            ],
             output='screen'
         ),
 
@@ -39,16 +45,16 @@ def generate_launch_description():
                 '/scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
                 '/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry',
                 '/tf@tf2_msgs/msg/TFMessage@gz.msgs.Pose_V',
-                '/world/empty/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-                '/world/empty/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+                '/world/factory_warehouse/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+                '/world/factory_warehouse/model/simple_robot/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
             ],
             parameters=[{
-                'qos_overrides./clock.publisher.reliability': 'best_effort'  # 이 줄 추가!
+                'qos_overrides./clock.publisher.reliability': 'best_effort'
             }],
             remappings=[
                 ('/scan', '/scan_raw'),
-                ('/world/empty/clock', '/clock'),
-                ('/world/empty/joint_state', '/joint_states'),
+                ('/world/factory_warehouse/clock', '/clock'),
+                ('/world/factory_warehouse/model/simple_robot/joint_state', '/joint_states'),
             ],
             output='screen'
         ),

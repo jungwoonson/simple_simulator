@@ -20,6 +20,8 @@ setup(
         ('share/' + package_name + '/resource', glob('resource/*.urdf')),
         # config 디렉터리의 모든 .yaml 파일을 설치 디렉터리로 복사
         ('share/' + package_name + '/config', glob('config/*.yaml')),
+        ('share/' + package_name + '/worlds', glob('worlds/*.sdf')),
+        ('share/' + package_name + '/maps', glob('maps/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
