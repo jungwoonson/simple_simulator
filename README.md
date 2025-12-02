@@ -2,6 +2,15 @@
 
 ROS2 Jazzy + Gazebo Harmonic 기반 2륜 구동 로봇 시뮬레이터
 
+## 📚 문서
+
+상세한 구현 가이드는 아래 문서를 참고하세요:
+
+1. [2륜 구동 로봇 시뮬레이션 구축](./docs/001_ROS2_Gazebo_2륜_구동_로봇_시뮬레이션_구축.md)
+2. [LiDAR 센서 및 SLAM 추가](./docs/002_ROS2_Gazebo_로봇에_LiDAR_센서_및_SLAM_추가.md)
+3. [Nav2 자율주행 구현](./docs/003_ROS2_Gazebo_Nav2_자율주행_구현.md)
+4. [URDF에서 Xacro로 전환](./docs/004_URDF에서_Xacro로_전환.md)
+
 ## 주요 기능
 
 - 2륜 구동 로봇 시뮬레이션 (전륜구동 + 후방 캐스터볼)
@@ -10,6 +19,11 @@ ROS2 Jazzy + Gazebo Harmonic 기반 2륜 구동 로봇 시뮬레이터
 - Nav2 자율주행 및 장애물 회피
 - ROS2-Gazebo 메시지 브리지
 - TF 프레임 자동 리매핑
+
+## 필수 요구사항
+- Ubuntu 24.04
+- ROS2 Jazzy Desktop
+- Gazebo Harmonic
 
 ## 자율주행 테스트 방법
 
@@ -48,23 +62,23 @@ rviz2
 **RViz2 설정:**
 
 1. **Fixed Frame 변경**
-    - 왼쪽 위 Displays 패널에서 Global Options → Fixed Frame을 `map`으로 변경
+   - 왼쪽 위 Displays 패널에서 Global Options → Fixed Frame을 `map`으로 변경
 
 2. **맵 추가**
-    - 왼쪽 아래 **Add** 버튼 클릭
-    - **By topic** 탭 선택
-    - `/map` → **Map** 선택 → **OK**
+   - 왼쪽 아래 **Add** 버튼 클릭
+   - **By topic** 탭 선택
+   - `/map` → **Map** 선택 → **OK**
 
 3. **로봇 모델 추가**
-    - **Add** 버튼 클릭
-    - **By display type** 탭 선택
-    - **RobotModel** 선택 → **OK**
-    - Description Topic을 `/robot_description`으로 설정
+   - **Add** 버튼 클릭
+   - **By display type** 탭 선택
+   - **RobotModel** 선택 → **OK**
+   - Description Topic을 `/robot_description`으로 설정
 
 4. **LiDAR 스캔 추가**
-    - **Add** 버튼 클릭
-    - **By topic** 탭 선택
-    - `/scan` → **LaserScan** 선택 → **OK**
+   - **Add** 버튼 클릭
+   - **By topic** 탭 선택
+   - `/scan` → **LaserScan** 선택 → **OK**
 
 ### 5. 로봇 초기 위치 설정
 1. RViz2 상단의 **"2D Pose Estimate"** 버튼 클릭
