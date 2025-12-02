@@ -3,13 +3,13 @@ from launch import LaunchDescription
 from launch.actions import ExecuteProcess
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+from launch.substitutions import Command
 
 def generate_launch_description():
     pkg_path = get_package_share_directory('robot_description')
-    urdf_file = os.path.join(pkg_path, 'resource', 'robot.urdf')
+    urdf_file = os.path.join(pkg_path, 'resource', 'robot.xacro')
 
-    with open(urdf_file, 'r') as f:
-        robot_desc = f.read()
+    robot_desc = Command(['xacro ', urdf_file])
 
     return LaunchDescription([
         ExecuteProcess(

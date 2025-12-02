@@ -18,6 +18,7 @@ setup(
         ('share/' + package_name + '/launch', glob('launch/*.py')),
         # resource 디렉터리의 모든 .urdf 파일을 설치 디렉터리로 복사
         ('share/' + package_name + '/resource', glob('resource/*.urdf')),
+        ('share/' + package_name + '/resource', glob('resource/*.xacro')),
         # config 디렉터리의 모든 .yaml 파일을 설치 디렉터리로 복사
         ('share/' + package_name + '/config', glob('config/*.yaml')),
         ('share/' + package_name + '/worlds', glob('worlds/*.sdf')),
