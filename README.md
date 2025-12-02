@@ -17,6 +17,7 @@ ROS2 Jazzy + Gazebo Harmonic 기반 2륜 구동 로봇 시뮬레이터
 ```bash
 source /opt/ros/jazzy/setup.bash
 cd ~/simple_simulator
+rosdep install -r --from-paths src --ignore-src -y
 colcon build
 source install/setup.bash
 export GZ_IP=127.0.0.1
